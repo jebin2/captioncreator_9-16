@@ -426,4 +426,5 @@ if __name__ == "__main__":
 	else:
 		with CaptionCreator(None, custom_config) as caption_generator:
 			for file in utils.list_files_recursive(constants.INPUT_FOLDER):
-				caption_generator.generate(file)
+				if file.endswith((".mp4", ".mov", ".avi", ".mkv")):
+					caption_generator.generate(file)
