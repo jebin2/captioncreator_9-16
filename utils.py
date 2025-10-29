@@ -7,6 +7,7 @@ import string
 from custom_logger import logger_config
 import constants
 import secrets
+from PIL import ImageFont
 
 def list_files_recursive(directory):
     file_list = []
@@ -24,9 +25,7 @@ def remove_file(file_path, retry=True):
             Path(file_path).unlink()
             logger_config.success(f"{file_path} has been removed successfully.")
     except Exception as e:
-        logger_config.warning(f"Error occurred while trying to remove the file: {e}")
         if retry:
-            logger_config.debug("retrying after 10 seconds", seconds=10)
             remove_file(file_path, False)
 
 def remove_directory(directory_path):
@@ -65,7 +64,7 @@ def write_videofile(video_clip, output_path, fps=constants.FPS):
         # temp_audiofile=audio_file,
         # write_logfile=False,
         # bitrate='8000k',
-        # audio_codec='aac',
+        audio_codec='aac',
     )
 
 def get_video_fps(video_path):
@@ -135,3 +134,76 @@ def check_if_vfr(video_path):
     except Exception as e:
         print(f"Warning: Could not detect VFR status: {e}")
         return False, 30.0, 30.0
+
+def get_text_width(text, font_path, font_size):
+    """Calculates the pixel width of a given text string."""
+    try:
+        font = ImageFont.truetype(font_path, font_size)
+        return font.getlength(text)
+    except IOError:
+        print(f"Font file not found at {font_path}. Cannot calculate text width.")
+        # Fallback to a rough estimate if font is not found
+        return len(text) * font_size * 0.6
+
+def group_words_by_time_and_width(
+    word_timestamps,
+    max_gap_seconds: float,
+    max_width_px: int,
+    font_path: str,
+    font_size: int,
+    max_words_per_group: int = 3
+):
+    if not word_timestamps:
+        return []
+
+    caption_groups = []
+    current_group = []
+
+    for word_data in word_timestamps:
+        processed_word = word_data["word"].strip().upper()
+        if not processed_word:
+            continue
+        
+        word_data["word"] = processed_word
+
+        if not current_group:
+            current_group.append(word_data)
+            continue
+
+        last_word_in_group = current_group[-1]
+        time_gap = word_data["start"] - last_word_in_group["end"]
+
+        potential_text = " ".join([w["word"] for w in current_group] + [word_data["word"]])
+        potential_width = get_text_width(potential_text, font_path, font_size)
+
+        if (len(current_group) < max_words_per_group and 
+            time_gap <= max_gap_seconds and 
+            potential_width <= max_width_px):
+            current_group.append(word_data)
+        else:
+            group_text = " ".join([w["word"] for w in current_group])
+            start_time = current_group[0]["start"]
+            end_time = current_group[-1]["end"]
+            
+            caption_groups.append({
+                "text": group_text,
+                "words": current_group,
+                "start": start_time,
+                "end": end_time
+            })
+
+            current_group = [word_data]
+
+    if current_group:
+        group_text = " ".join([w["word"] for w in current_group])
+        start_time = current_group[0]["start"]
+        end_time = current_group[-1]["end"]
+        
+        caption_groups.append({
+            "text": group_text,
+            "words": current_group,
+            "start": start_time,
+            "end": end_time
+        })
+
+    return caption_groups
