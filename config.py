@@ -29,7 +29,7 @@ class Config:
     font_size: int = 80
     standard_video_width: int = 1080
     use_dynamic_font_size: bool = True
-    text_color: str = "#FFFFFF"
+    text_color: str = "#EFEFEF"
     stroke_color: str = "#000000"
     stroke_width: int = 10
     stroke_corner_radius: int = 6

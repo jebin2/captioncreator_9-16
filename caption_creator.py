@@ -387,9 +387,8 @@ class CaptionCreator:
 
 			final_clip = CompositeVideoClip([self.video] + text_clips)
 
-			parts = self.config.output_path.split('/')
 			file_stem = Path(self.video_path).stem
-			self.config.output_path = f"{constants.OUTPUT_FOLDER}/{file_stem}_captioned.mp4"
+			self.config.output_path = f"{constants.OUTPUT_FOLDER}/{file_stem}_{utils.generate_random_string()}_captioned.mp4"
 
 			utils.write_videofile(final_clip, self.config.output_path, fps=self.fps)
 			final_clip.close()

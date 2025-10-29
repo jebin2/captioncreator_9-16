@@ -155,7 +155,7 @@ def group_words_by_time_and_width(
     font_path: str,
     font_size: int,
     max_words_per_group: int = 3,
-    max_caption_duration_seconds: int = 1
+    max_caption_duration_seconds: int = 0.6
 ):
     if not word_timestamps:
         return []
