@@ -425,11 +425,9 @@ if __name__ == "__main__":
 			caption_generator.generate(args.input)
 	else:
 		with CaptionCreator(None, custom_config) as caption_generator:
-			files = utils.list_files_recursive(constants.INPUT_FOLDER)
+			files = [file for file in utils.list_files_recursive(constants.INPUT_FOLDER) if file.endswith((".mp4", ".mov", ".avi", ".mkv", ".webm"))]
 			for file in files:
-				if file.endswith((".mp4", ".mov", ".avi", ".mkv", ".webm")
-):
-					caption_generator.generate(file)
+				caption_generator.generate(file)
 
 			if len(files) == 0:
 				logger_config.warning('No Video files available in the input folder (".mp4", ".mov", ".avi", ".mkv", ".webm")')
