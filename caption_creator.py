@@ -19,6 +19,7 @@ from config import Config
 import constants
 import subprocess
 from aspect_validator import AspectRatioValidator
+from pathlib import Path
 
 class CaptionCreator:
 	def __init__(self, video_path: str = None, config: Optional[Config] = None):
@@ -381,6 +382,12 @@ class CaptionCreator:
 				logger_config.info(f"Processed word {i + 1}/{len(self.word_timestamps)}", overwrite=True)
 
 			final_clip = CompositeVideoClip([self.video] + text_clips)
+
+			parts = self.config.output_path.split('/')
+			file_stem = Path(file).stem
+			parts[-1] = f"{file_stem}_{parts[-1]}"
+			self.config.output_path = '/'.join(parts)
+
 			utils.write_videofile(final_clip, self.config.output_path, fps=self.fps)
 			final_clip.close()
 			
