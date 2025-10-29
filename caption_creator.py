@@ -374,7 +374,7 @@ class CaptionCreator:
 				if i+1 < len(caption_groups):
 					duration = caption_groups[i+1]["start"] - start_time
 				else:
-					duration = end_time - start_time
+					duration = self.video.duration - start_time
 				
 				if start_time >= self.video.duration or duration <= 0:
 					continue
