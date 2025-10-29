@@ -1,0 +1,6 @@
+input/*.mov
+input/*.mp4
+output/
+tempOutput/
+videoFolder/
+*.mp3

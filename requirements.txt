@@ -1,0 +1,6 @@
+git+https://github.com/jebin2/custom_logger.git
+
+moviepy
+pillow
+
+git+https://github.com/jebin2/STT.git#egg=stt-runner[fasterwhisper]
