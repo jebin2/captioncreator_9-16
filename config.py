@@ -27,7 +27,7 @@ class Config:
     font_size: int = 140
     text_color: str = "white"
     stroke_color: str = "black"
-    stroke_width: int = 3
+    stroke_width: int = 10
     vertical_align: str = 800
     horizontal_align: str = "center"
     
