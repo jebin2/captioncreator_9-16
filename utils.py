@@ -8,6 +8,9 @@ from custom_logger import logger_config
 import constants
 import secrets
 from PIL import ImageFont
+import cv2
+from PIL import Image
+import numpy as np
 
 def list_files_recursive(directory):
     file_list = []
@@ -151,7 +154,8 @@ def group_words_by_time_and_width(
     max_width_px: int,
     font_path: str,
     font_size: int,
-    max_words_per_group: int = 3
+    max_words_per_group: int = 3,
+    max_caption_duration_seconds: int = 1
 ):
     if not word_timestamps:
         return []
@@ -172,13 +176,16 @@ def group_words_by_time_and_width(
 
         last_word_in_group = current_group[-1]
         time_gap = word_data["start"] - last_word_in_group["end"]
+        total_time = last_word_in_group["end"] - current_group[0]["start"]
 
         potential_text = " ".join([w["word"] for w in current_group] + [word_data["word"]])
         potential_width = get_text_width(potential_text, font_path, font_size)
 
         if (len(current_group) < max_words_per_group and 
             time_gap <= max_gap_seconds and 
-            potential_width <= max_width_px):
+            potential_width <= max_width_px and
+            total_time <= max_caption_duration_seconds
+            ):
             current_group.append(word_data)
         else:
             group_text = " ".join([w["word"] for w in current_group])
@@ -207,3 +214,23 @@ def group_words_by_time_and_width(
         })
 
     return caption_groups
+
+def make_rounded_outline(mask: Image.Image, radius: int) -> Image.Image:
+    """
+    Create a rounded stroke from a text alpha mask using elliptical dilation.
+    This is the key function for universally rounded corners.
+    """
+    if radius <= 0:
+        return mask.copy()
+    
+    # Convert PIL Image to a NumPy array for OpenCV
+    a = np.array(mask)
+    
+    # Create the elliptical structuring element for perfect rounding
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * radius + 1, 2 * radius + 1))
+    
+    # Dilate the image - this expands the white areas, creating the stroke shape
+    dilated_array = cv2.dilate(a, kernel, iterations=1)
+    
+    # Convert the NumPy array back to a PIL Image
+    return Image.fromarray(dilated_array, mode="L")

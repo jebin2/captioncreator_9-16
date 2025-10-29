@@ -18,7 +18,7 @@ class Config:
 
     # --- Font and Color ---
     font_path: List[str] = field(default_factory=lambda: [
-        "Fonts/Bungee/Bungee-Regular.ttf"
+        "Fonts/Archivo_Black,Bungee/Archivo_Black/ArchivoBlack-Regular.ttf"
     ])
     color_palette: List[str] = field(default_factory=lambda: [
         "#E74747", "#FF6B6B", "#4ECDC4", "#2AA0BB", "#36AF77",
@@ -26,12 +26,12 @@ class Config:
     ])
 
     # --- General Text Properties ---
-    font_size: int = 100
+    font_size: int = 80
     standard_video_width: int = 1080
     use_dynamic_font_size: bool = True
     text_color: str = "#FFFFFF"
     stroke_color: str = "#000000"
-    stroke_width: int = 14
+    stroke_width: int = 10
     stroke_corner_radius: int = 6
     line_spacing: int = 10
     vertical_align: str = "center"
@@ -65,6 +65,8 @@ class Config:
     use_safe_zone_for_width: bool = True
     grouping_left_padding: int = 60      # Left safe margin in pixels
     grouping_right_padding: int = 120     # Right safe margin in pixels
+    split_long_captions: bool = True
+    max_caption_duration_seconds: int = 1
     
     # --- Highlighting (for grouped) ---
     highlight_text: bool = False
@@ -75,7 +77,7 @@ class Config:
     # --- NEW: Drop Shadow Properties ---
     use_drop_shadow: bool = True
     shadow_color: str = "#000000E6"  # Darker shadow (90% opacity)
-    shadow_offset: Tuple[int, int] = (10, 10)  # Subtle offset
+    shadow_offset: Tuple[int, int] = (6, 6)  # Subtle offset
     shadow_blur_radius: int = 20
     shadow_style: Literal["drop_shadow", "block_shadow"] = "block_shadow"
 

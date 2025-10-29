@@ -269,21 +269,16 @@ class CaptionCreator:
 				mask_draw.text((x_temp_line, y_start + ascent), word, font=font, fill=255, anchor="ls")
 				x_temp_line += word_width + space_width
 
-			erosion_size = (self.active_stroke_corner_radius * 2) + 1
-			eroded_mask = text_mask.filter(ImageFilter.MinFilter(erosion_size))
-			expansion_size = ((self.active_stroke_width + self.active_stroke_corner_radius) * 2) + 1
-			expanded_mask = eroded_mask.filter(ImageFilter.MaxFilter(expansion_size))
+			background_mask = utils.make_rounded_outline(text_mask, self.active_stroke_width)
 
 			black_color_layer = Image.new("RGBA", final_img.size, self.config.stroke_color)
+			white_fill_layer = Image.new("RGBA", final_img.size, self.config.text_color)
 
-			final_img.paste(black_color_layer, self.active_shadow_offset, mask=expanded_mask)
+			final_img.paste(black_color_layer, self.active_shadow_offset, mask=background_mask)
 
-			final_img.paste(black_color_layer, (0, 0), mask=expanded_mask)
+			final_img.paste(black_color_layer, (0, 0), mask=background_mask)
 
-			x_temp_line = x_start
-			for word, color, word_width in line_words:
-				draw.text((x_temp_line, y_start + ascent), word, font=font, fill=color, anchor="ls")
-				x_temp_line += word_width + space_width
+			final_img.paste(white_fill_layer, (0, 0), mask=text_mask)
 				
 			y_start += line_height_from_font + self.active_line_spacing
 
